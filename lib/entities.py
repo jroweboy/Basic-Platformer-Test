@@ -235,13 +235,22 @@ class Entity(object):
             return desiredValue
             
     def convert_pixel_to_level(self, x, y, level):
+        '''
+        The old method made large maps really slow so this time we will take advantage of
+        the fact that we know the width and height of the level in order to calculate which block we are at
+        '''
+
+        return int(x / level.blockWidth), int(y / level.blockHeight)
+
+        '''
         for levelX in range(level.levelWidth):
             for levelY in range(level.levelHeight):
                 tempRect = pygame.Rect(levelX * level.blockWidth, 
                                        levelY * level.blockHeight, 
                                        level.blockWidth, level.blockHeight)
                 if tempRect.collidepoint(x, y):
-                    return (levelX, levelY)
+                    return levelX, levelY
+        '''
     
     def scan_line(self, line, start, end, dir, axis, level):
         if axis == AXISX:
@@ -257,27 +266,64 @@ class Entity(object):
     def check_collision(self, speed, minDistance):
         # If minumum X distance is shorter than the player's deltaX,
         # move the player by that distance instead.
-        if (speed < 0 and minDistance > speed) or\
-           (speed > 0 and minDistance < speed):
-           return True
-                
-        return False
+        return (speed < 0 and minDistance > speed) or (speed > 0 and minDistance < speed)
         
     def check_on_block(self, rect, level):
         # is there a better way than checking every block in the level?
+
+        '''
+        I also went ahead and optimized this function a little bit since it was the third most
+        time consuming method in the game code
+        '''
+
+
+        '''
+        ret_val1 = False
+
         for x in range(level.levelWidth):
             for y in range(level.levelHeight):
                 if level.collisionLayer[y][x] == level.blank:
                     continue
                 elif level.collisionLayer[y][x] == level.block:
                     tempCheckRect = copy.copy(rect)
-                    tempLevelRect = pygame.Rect(x*level.blockWidth, 
-                                                y*level.blockHeight, 
+                    tempLevelRect = pygame.Rect(x*level.blockWidth,
+                                                y*level.blockHeight,
                                                 level.blockWidth, level.blockHeight)
                     tempCheckRect.bottom += 1
                     if tempLevelRect.colliderect(tempCheckRect):
-                        return True
-        return False
+                        ret_val1 = True
+                        break
+        #return False
+        '''
+
+        x, y = self.get_coords(level)
+        # we need to see check the three blocks below the player
+        levelBlocks = (level.collisionLayer[y+1][x-1],
+                       level.collisionLayer[y+1][x],
+                       level.collisionLayer[y+1][x+1],)
+        if all(block == level.blank for block in levelBlocks):
+            #all of the blocks below me are blank so there is no chance of collision
+            ret_val2 = False
+        else:
+            # if level.collisionLayer[y-1][x] == level.block:
+            standingRect = copy.deepcopy(rect)
+            # add 1 to the bottom to see if we are colliding
+            # HACKISH :S
+            standingRect.bottom += 1
+            # make bounding rectangles for each of the three blocks above player
+            # That plus 1 right there solved a long standing bug and I don't really know why :p
+            levelRects = [pygame.Rect((i)*level.blockWidth,
+                                      (y+1)*level.blockHeight,
+                                      level.blockWidth,
+                                      level.blockHeight,)
+                                      for i in range(x-1, x+2)]
+
+            return any(levelBlocks[a] == level.block and
+                       levelRects[a].colliderect(standingRect)
+                       for a in range(len(levelBlocks)))
+        # return ret_val2
+
+
 
     def check_head_collision(self, level):
         '''
@@ -361,8 +407,8 @@ class Player(Entity):
         self.jumping = keys[Kjump]
         if self.jumping:
             self.speedY = self.jump(self.speedY, self.onBlock)
-            if self.onBlock:
-                self.onBlock == True
+            #if self.onBlock:
+            #    self.onBlock == True
         else:
             self.speedY = self.fall(self.speedY)
             
@@ -385,7 +431,7 @@ class Player(Entity):
         if abs(self.minYDistance) < abs(self.speedY):
             self.speedY = 0
             
-        self.rect.top  += self.minYDistance
+        self.rect.top += self.minYDistance
         
         # Update camera rect 
         self.cameraRect.bottom = self.rect.bottom

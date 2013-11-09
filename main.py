@@ -85,4 +85,6 @@ class main():
         return keys
 
 if __name__ == '__main__':
+    #import cProfile
+    #cProfile.run('main().play_game()')
     main().play_game()
