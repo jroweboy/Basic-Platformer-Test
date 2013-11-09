@@ -33,8 +33,8 @@ class main():
         self.clock = pygame.time.Clock()
         
         # Set up objects
-        self.currentLevel = level.Level("lib\\level_1.lvl")
-        self.player = entities.Player(self.currentLevel, (10, 9, 60, 90))
+        self.currentLevel = level.Level("levels\\level_1.lvl")
+        self.player = entities.Player(self.currentLevel, (4, 57, 60, 90))
         
         # original speed settings for 30 FPS
         if self.FPS == 30:
