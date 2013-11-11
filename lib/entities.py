@@ -4,10 +4,12 @@ import copy
 import time
 import anim
 
-Kleft = K_LEFT
-Kright = K_RIGHT
+# changed keys from left, right, down
+
+Kleft = K_a
+Kright = K_d
 Kjump = K_SPACE
-Kcrouch = K_DOWN
+Kcrouch = K_s
 
 NORTH = 'north'
 SOUTH = 'south'
@@ -19,15 +21,15 @@ AXISY = 'y'
 class Entity(object):
     color = (255, 0, 0)
     
-    maxSpeed = 12
-    accel_amt = 1.5
+    maxSpeed = 9
+    accel_amt = 1
     airaccel_amt = 1
-    deaccel_amt = 5
+    deaccel_amt = 3
     
-    fallAccel = 3.75
-    jumpMod = 2.5
-    jumpAccel = 25
-    maxFallSpeed = 30
+    fallAccel = 2
+    jumpMod = 1.5
+    jumpAccel = 15
+    maxFallSpeed = 10
     
     def __init__(self, level, rectTuple, image=None):
         self.rect = pygame.Rect((rectTuple[0] * level.blockWidth),
