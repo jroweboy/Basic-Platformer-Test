@@ -271,31 +271,9 @@ class Entity(object):
         return (speed < 0 and minDistance > speed) or (speed > 0 and minDistance < speed)
         
     def check_on_block(self, rect, level):
-        # is there a better way than checking every block in the level?
-
         '''
         I also went ahead and optimized this function a little bit since it was the third most
         time consuming method in the game code
-        '''
-
-
-        '''
-        ret_val1 = False
-
-        for x in range(level.levelWidth):
-            for y in range(level.levelHeight):
-                if level.collisionLayer[y][x] == level.blank:
-                    continue
-                elif level.collisionLayer[y][x] == level.block:
-                    tempCheckRect = copy.copy(rect)
-                    tempLevelRect = pygame.Rect(x*level.blockWidth,
-                                                y*level.blockHeight,
-                                                level.blockWidth, level.blockHeight)
-                    tempCheckRect.bottom += 1
-                    if tempLevelRect.colliderect(tempCheckRect):
-                        ret_val1 = True
-                        break
-        #return False
         '''
 
         x, y = self.get_coords(level)
@@ -305,7 +283,7 @@ class Entity(object):
                        level.collisionLayer[y+1][x+1],)
         if all(block == level.blank for block in levelBlocks):
             #all of the blocks below me are blank so there is no chance of collision
-            ret_val2 = False
+            return False
         else:
             # if level.collisionLayer[y-1][x] == level.block:
             standingRect = copy.deepcopy(rect)
