@@ -2,16 +2,15 @@ import pygame
 from level import *
 
 class Camera(pygame.Rect):
-    cameraSlackX = 80
-    cameraSlackY = 60
+    # removed the camera slack because it was hard to move the background if it was there
+    cameraSlackX = 0
+    cameraSlackY = 0
     def __init__(self, targetRect, windowWidth, windowHeight):
         super(Camera,self).__init__(targetRect.centerx-(windowWidth/2), 
                                     targetRect.centery-(windowHeight/2), 
                                     windowWidth, windowHeight)
         
     def update(self, rect, level):
-        #self.centerx = rect.centerx
-        #self.centery = rect.centery
         # Figure out if rect has exceeded camera slack
         if self.centerx - rect.centerx > self.cameraSlackX:
             self.left = rect.centerx + self.cameraSlackX - self.width/2
@@ -23,12 +22,12 @@ class Camera(pygame.Rect):
             self.top = rect.centery - self.cameraSlackY - self.height/2
         
         # This keeps the camera within the boundaries of the level
-        if self.right > level.rightEdge - level.blockWidth:
-            self.right = level.rightEdge - level.blockWidth
-        elif self.left < level.blockWidth:
-            self.left = level.blockWidth
-        if self.top < level.blockHeight*3:
-            self.top = level.blockHeight*3
+        if self.right > level.rightEdge:
+            self.right = level.rightEdge
+        elif self.left < 0:
+            self.left = 0
+        if self.top < 0:
+            self.top = 0
         elif self.bottom > level.bottomEdge:
             self.bottom = level.bottomEdge
         

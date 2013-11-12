@@ -1,6 +1,7 @@
 import pygame
 import time
 import random
+import math;
 pygame.font.init()
 
 #------------  R    G    B  ----------------
@@ -36,8 +37,20 @@ def draw_OSD(surface, strings):
         pos += FONTSIZE
 
 def draw_level(surface, level, camera):
+    '''
+    When using a TMX draw level is not used. It IS still used for debugging the collision bounds though
+    '''
     #surface.blit(BACKGROUND, (0, 0))
-    surface.fill(BACKGROUND_COLOR)
+    #surface.fill(BACKGROUND_COLOR)
+    # change the render code to only draw blocks that are near the camera
+    #x, y = int(camera.x / level.blockWidth) - 1, int(camera.y / level.blockHeight) - 1
+    #x2, y2 = x + math.ceil(800 / level.blockWidth), math.ceil(600 / level.blockHeight)
+    #
+    #for a in range(x, x2+1):
+    #    for b in range(y, y2+1):
+    #        #blockRect = pygame.Rect(a*level.blockWidth, b*level.blockHeight, level.blockWidth, level.blockHeight)
+    #        block = level.tmx.getTileImage(a,b,level)
+    #        surface.blit(block,)
 
     # Rendering involves a little conversion of level coordinates to surface coordinates
     # The active area makes sure only blocks that are shown on screen are rendered
@@ -49,12 +62,12 @@ def draw_level(surface, level, camera):
                     continue
                 if level.collisionLayer[y][x] == level.block:
                     surface.blit(level.blockSurf,
-                                 ((x*level.blockWidth) - camera.left, 
+                                 ((x*level.blockWidth) - camera.left,
                                  (y*level.blockHeight) - camera.top,))
-                    #pygame.draw.rect(surface, BLOCK_COLOR, 
-                    #((x*level.blockWidth) - camera.left, 
-                     #(y*level.blockHeight) - camera.top, 
-                     #level.blockWidth, 
+                    #pygame.draw.rect(surface, BLOCK_COLOR,
+                    #((x*level.blockWidth) - camera.left,
+                     #(y*level.blockHeight) - camera.top,
+                     #level.blockWidth,
                      #level.blockHeight))
  
 # This function is needed to draw a rect within the camera 
