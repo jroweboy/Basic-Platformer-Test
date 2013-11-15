@@ -10,13 +10,13 @@ class Level(object):
     blockWidth = 75
     blockHeight = 75
     
-    def __init__(self, level_data_filename, tmx):
+    def __init__(self, level_data_filename):
         import re
         with open(level_data_filename, 'r') as f:
             self.levelRaw = f.readlines()
         # replace any of the visual blocks with just a regular block only for the collision layer
         self.collisionLayer = [re.sub("0", "b", row.strip('\n')) for row in self.levelRaw]
-        self.tmx = tmx
+
         self.levelWidth = len(self.collisionLayer[0])
         self.levelHeight = len(self.collisionLayer)
         
