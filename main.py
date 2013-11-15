@@ -30,12 +30,12 @@ class main():
         
         # Set up objects
         self.tilemap = tmx.load('level_1.tmx', self.screen.get_size())
-        self.currentLevel = level.Level("levels/level_1.lvl", self.tilemap)
+        self.currentLevel = level.Level("levels/level_1.lvl")
         self.player = entities.Player(self.currentLevel, (4, 56, 60, 90))
         self.tilemap.set_focus(self.player.rect.centerx, self.player.rect.centery)
 
-        self.currentLevel = level.Level("levels/level_2.lvl")
-        self.player = entities.Player(self.currentLevel, (3, 4, 60, 90))
+        #self.currentLevel = level.Level("levels/level_2.lvl")
+        #self.player = entities.Player(self.currentLevel, (3, 4, 60, 90))
 
         # original speed settings for 30 FPS
         #
