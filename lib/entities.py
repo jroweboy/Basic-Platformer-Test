@@ -27,7 +27,7 @@ class Entity(object):
     deaccel_amt = 3
     
     fallAccel = 2
-    jumpMod = 1.5
+    jumpMod = 1.6
     jumpAccel = 15
     maxFallSpeed = 10
     
@@ -235,24 +235,14 @@ class Entity(object):
             return -desiredValue
         elif dir == EAST or dir == SOUTH:
             return desiredValue
-            
-    def convert_pixel_to_level(self, x, y, level):
-        '''
+
+    @staticmethod
+    def convert_pixel_to_level(x, y, level):
+        """
         The old method made large maps really slow so this time we will take advantage of
         the fact that we know the width and height of the level in order to calculate which block we are at
-        '''
-
+        """
         return int(x / level.blockWidth), int(y / level.blockHeight)
-
-        '''
-        for levelX in range(level.levelWidth):
-            for levelY in range(level.levelHeight):
-                tempRect = pygame.Rect(levelX * level.blockWidth, 
-                                       levelY * level.blockHeight, 
-                                       level.blockWidth, level.blockHeight)
-                if tempRect.collidepoint(x, y):
-                    return levelX, levelY
-        '''
     
     def scan_line(self, line, start, end, dir, axis, level):
         if axis == AXISX:
@@ -271,10 +261,10 @@ class Entity(object):
         return (speed < 0 and minDistance > speed) or (speed > 0 and minDistance < speed)
         
     def check_on_block(self, rect, level):
-        '''
+        """
         I also went ahead and optimized this function a little bit since it was the third most
         time consuming method in the game code
-        '''
+        """
 
         x, y = self.get_coords(level)
         # we need to see check the three blocks below the player
@@ -306,11 +296,11 @@ class Entity(object):
 
 
     def check_head_collision(self, level):
-        '''
+        """
         Checks the current player's original bounding rectangle to see if standing up
         after crouching would cause a collision. If this returns True, the player should not be
         allowed to stand up
-        '''
+        """
         if not self.crouching:
             return False
         x, y = self.get_coords(level)
@@ -337,7 +327,7 @@ class Entity(object):
                        for a in range(len(levelBlocks)))
         
     def get_coords(self, level):
-        return self.convert_pixel_to_level(self.rect.centerx, self.rect.centery, level)
+        return Entity.convert_pixel_to_level(self.rect.centerx, self.rect.centery, level)
         
 class Player(Entity):
     crouching = False
@@ -347,10 +337,10 @@ class Player(Entity):
     def __init__(self, level, rectTuple, image=None):
         super(Player, self).__init__(level, rectTuple, image)
         try:
-            self.runAnim = anim.Animation("lib\\player.png", self.rect.width, self.animation_speed)
-            self.crouchAnim = anim.Animation("lib\\crouching.png", self.rect.width, 0.07)
-            self.idle = anim.Animation("lib\\idle.png", self.rect.width, 0)
-            self.idleCrouching = anim.Animation("lib\\idle_crouching.png", self.rect.width, 0)
+            self.runAnim = anim.Animation("lib\\player2.png", self.rect.width, self.animation_speed)
+            self.crouchAnim = anim.Animation("lib\\crouching2.png", self.rect.width, 0.07)
+            self.idle = anim.Animation("lib\\idle2.png", self.rect.width, 0)
+            self.idleCrouching = anim.Animation("lib\\idle_crouching2.png", self.rect.width, 0)
             self.hasAnim = True
         except pygame.error:
             self.hasAnim = False
@@ -412,7 +402,7 @@ class Player(Entity):
             self.speedY = 0
             
         self.rect.top += self.minYDistance
-        
+
         # Update camera rect 
         self.cameraRect.bottom = self.rect.bottom
         self.cameraRect.left = self.rect.left
@@ -450,3 +440,14 @@ class Player(Entity):
                     self.image = self.idleCrouching.frames[0]
                 self.runAnim.reset()
                 self.crouchAnim.reset()
+
+        # check to see if the player has hit the exit location of the level
+        level_location = Entity.convert_pixel_to_level(self.rect.centerx, self.rect.centery, level)
+        # tell main to swap levels if the player center collides with the door
+        ret_val = False
+        try:
+            ret_val = level.coords[level_location[1]][level_location[0]] == level.exit
+        except:
+            import pdb; pdb.set_trace()
+        return ret_val
+

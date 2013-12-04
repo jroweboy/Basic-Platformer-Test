@@ -69,9 +69,18 @@ def draw_level(surface, level, camera):
                      #(y*level.blockHeight) - camera.top,
                      #level.blockWidth,
                      #level.blockHeight))
- 
-# This function is needed to draw a rect within the camera 
+
+
+# This function is needed to draw a rect within the camera
+from lib.entities import Player
 def draw_entities(surface, sprites, camera):
     for sprite in sprites:
-        surface.blit(sprite.image, (sprite.rect.left - camera.left, 
+        # warning : I wanted to increase the player sprites size without affecting the
+        # bounding box so I ended up hacking it into the draw routine right here.
+        # TODO: write this better
+        if type(sprite) is Player:
+            surface.blit(sprite.image, (sprite.rect.left - camera.left,
+                                    sprite.rect.top - 20 - camera.top))
+        else:
+            surface.blit(sprite.image, (sprite.rect.left - camera.left,
                                     sprite.rect.top - camera.top))

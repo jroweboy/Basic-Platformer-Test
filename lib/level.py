@@ -17,6 +17,8 @@ class Level(object):
         # replace any of the visual blocks with just a regular block only for the collision layer
         self.collisionLayer = [re.sub("0", "b", row.strip('\n')) for row in self.levelRaw]
 
+        # a simple 2d array with all the coords as characters to make it easy to see which kinda block you are on
+        self.coords = [[c for c in row.strip('\n')] for row in self.levelRaw]
         self.levelWidth = len(self.collisionLayer[0])
         self.levelHeight = len(self.collisionLayer)
         
